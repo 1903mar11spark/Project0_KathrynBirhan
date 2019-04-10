@@ -29,10 +29,18 @@ public class Ledger {
 		this.pass = pass;
 	}
 	private int id;
+	private String username;
+
 	private String pass;
 	private String firstname;
 	private String lastname;
-	private String username;
+	
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
 	public int getId() {
 		return id;
 	}
@@ -56,13 +64,14 @@ public class Ledger {
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
-
-
 	@Override
 	public String toString() {
-		return "Ledger [id=" + id + ", pass=" + pass + ", firstname=" + firstname + ", lastname=" + lastname
-				+ "]";
+		return "Ledger [id=" + id+ ", username=" + username + ", pass=" + pass + ", firstname=" + firstname + ", lastname=" + lastname
+				 + "]";
 	}
+
+
+
 
 	
 		   

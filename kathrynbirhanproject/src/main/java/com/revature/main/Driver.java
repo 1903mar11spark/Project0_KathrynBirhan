@@ -30,19 +30,21 @@ public static void main(String[] args) {
 	
 	
 	System.out.println("bd.getLedger is the problem");
-	//List<Ledger> ClientList = bd.getLedger();
+	List<Ledger> ClientList = bd.getLedger();
 	
 	System.out.println("JK its the foreahloop");
 
 	
 	System.out.println("Test3");
-	System.out.println(bd.getLedger());
+	System.out.println(ClientList);
 	System.out.println("Test4");
-	//for(Ledger l : ClientList) {
-	//	System.out.println(l);
-	//}
-	
 	System.out.println("Test5");
+	for(Ledger l : ClientList) {
+		System.out.println(l);
+	}
+	
+	
+	
 }
 
 
@@ -50,3 +52,17 @@ public static void main(String[] args) {
 
 
 }
+	
+	
+	
+	
+	
+
+	
+	
+	
+	
+	
+	
+	
+

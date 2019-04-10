@@ -23,7 +23,7 @@ public class BankDaoImplementation implements BankDAO{
 		List<Ledger> l1 = new ArrayList<>();
 		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
 			String sql = "SELECT USER_ID, USERNAME, PASS, FIRSTNAME, LASTNAME FROM LEDGER ";
-			CallableStatement stmt = con.prepareCall(sql);
+			PreparedStatement stmt = con.prepareCall(sql);
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next()) {
 				int userId = rs.getInt("USER_ID");
@@ -71,14 +71,16 @@ public class BankDaoImplementation implements BankDAO{
 		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
 			String query = "INSERT INTO LEDGER ("
 							+" USER_ID,"
+							+" USERNAME,"
 							+" PASS,"
 							+" FIRSTNAME,"
 							+" LASTNAME ) VALUES ("
-							+"NULL, ?,?,?)";
+							+"NULL,?, ?,?,?)";
 			PreparedStatement stmt = con.prepareStatement(query);
-			stmt.setString(1, ledger.getPass());
-			stmt.setString(2, ledger.getFirstname());
-			stmt.setString(3, ledger.getLastname());
+			stmt.setString(1, ledger.getUsername());
+			stmt.setString(2, ledger.getPass());
+			stmt.setString(3, ledger.getFirstname());
+			stmt.setString(4, ledger.getLastname());
 			
 			stmt.executeUpdate();
 			stmt.close();
