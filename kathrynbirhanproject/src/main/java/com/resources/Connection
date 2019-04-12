@@ -1,0 +1,5 @@
+url=jdbc:oracle:thin:@spark-1903mar11.chrzecuoq5po.us-east-2.rds.amazonaws.com:1521:orcl
+username= BirhanMusse
+password= Dfkbrapgab1
+SuperUser= shameless
+Superpass= allDylansAreCool

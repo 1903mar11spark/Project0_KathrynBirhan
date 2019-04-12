@@ -7,22 +7,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.revature.beans.Ledger;
 import com.revature.util.ConnectionUtil;
 import com.revature.beans.Accounts;
-import com.revature.beans.Transactions;
 
 public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public List<Ledger> getLedger() {
 		List<Ledger> l1 = new ArrayList<>();
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String sql = "SELECT USER_ID, USERNAME, PASS, FIRSTNAME, LASTNAME FROM LEDGER ";
 			PreparedStatement stmt = con.prepareCall(sql);
 			ResultSet rs = stmt.executeQuery(sql);
@@ -41,35 +38,10 @@ public class BankDaoImplementation implements BankDAO{
 		return l1;
 	}
 	
-	/*
-	@Override
-	public Ledger getLedgerByID(int id)  {
-		Ledger l = null;
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
-			String sql = "SELECT USER_ID, PASS, FIRSTNAME, LASTNAME FROM LEDGER ";
-			PreparedStatement stmt = con.prepareCall(sql);
-			ResultSet rs = stmt.executeQuery(sql);
-			
-			if (rs.next()) {
-				int userid = rs.getInt("USER_ID");
-				String password = rs.getString("PASS");
-				String fname = rs.getString("FIRSTNAME");
-				String lname = rs.getString("LASTNAME");
-				
-				l= new Ledger(userid, password,fname,lname);
-			}
-		} catch (SQLException | IOException e) {
-			e.printStackTrace();
-		}
-		
-		
-		return l;
-	}
-*/
 	@Override
 	public void CreateNewUser(Ledger ledger) {
 		
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "INSERT INTO LEDGER ("
 							+" USER_ID,"
 							+" USERNAME,"
@@ -97,7 +69,7 @@ public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public void CreateNewSavingsAccount(int i) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "INSERT INTO ACCOUNTS (ACCOUNT_ID, ACCOUNT_TYPE, BALANCE, USER_ID) VALUES (NULL, 'SAVINGS',0.00,?)";
 					
 			PreparedStatement stmt = con.prepareStatement(query);
@@ -116,7 +88,7 @@ public class BankDaoImplementation implements BankDAO{
 	}
 	@Override
 	public void CreateNewCheckingAccount(int i) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "INSERT INTO ACCOUNTS (ACCOUNT_ID, ACCOUNT_TYPE, BALANCE, USER_ID) VALUES (1, 'CHECKING',0.00,?)";
 
 			PreparedStatement stmt = con.prepareStatement(query);
@@ -136,7 +108,7 @@ public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public void MakeDeposit(int AccountNum, double deposit) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "UPDATE ACCOUNTS SET BALANCE = BALANCE +" +deposit +"WHERE ACCOUNT_ID="+AccountNum;
 							
 			PreparedStatement stmt = con.prepareStatement(query);
@@ -154,7 +126,7 @@ public class BankDaoImplementation implements BankDAO{
 	}
 	@Override
 	public void MakeWithdrawal(int accountNum, double withdrawal) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "UPDATE ACCOUNTS SET BALANCE = BALANCE -" +withdrawal +"WHERE ACCOUNT_ID="+accountNum;;
 							
 			PreparedStatement stmt = con.prepareStatement(query);
@@ -166,7 +138,7 @@ public class BankDaoImplementation implements BankDAO{
 			} catch(SQLIntegrityConstraintViolationException reason ) {
 				
 				System.out.println("WARNING! YOU ATTEMPTED TO WITHDRAW MORE MONEY THAN WAS AVAILABLE IN YOUR ACCOUNT! \n \n");
-				System.out.println("Here at KB banking, we protect customers from overdraft fees by not allowing them \n \n");
+				System.out.println("Here at KB banking, we protect customers from overdraft fees by not allowing them in the first place \n \n");
 				System.out.print("Just to be clear: You did NOT make a");
 				
 			}
@@ -182,7 +154,7 @@ public class BankDaoImplementation implements BankDAO{
 	public List<Accounts> getAccounts(int num) {
 		
 		List<Accounts> l1 = new ArrayList<>();
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String sql = "SELECT * FROM ACCOUNTS WHERE USER_ID=?";
 			PreparedStatement stmt = con.prepareCall(sql);
 			stmt.setInt(1, num);
@@ -208,7 +180,7 @@ public class BankDaoImplementation implements BankDAO{
 	public boolean Login(String userlogin, String passlogin) {
 		ResultSet rs = null;
 		boolean login = false;
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "Select USER_ID FROM LEDGER WHERE USERNAME = ? AND PASS = ?";
 			
 		
@@ -240,7 +212,7 @@ public class BankDaoImplementation implements BankDAO{
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		int x=0;
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "SELECT BALANCE FROM ACCOUNTS WHERE ACCOUNT_ID=?";
 			stmt = con.prepareStatement(query);
 			stmt.setInt(1, accountid);
@@ -274,18 +246,14 @@ public class BankDaoImplementation implements BankDAO{
 		
 		
 	}
-	@Override
-	public Ledger getLedgerByID(int id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	@Override
 	public int retrieveUserAccounts(String userlogin, String passlogin) {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		int x=0;
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "SELECT * FROM LEDGER WHERE USERNAME=? AND PASS=?";
 			stmt = con.prepareStatement(query);
 			stmt.setString(1, userlogin);
@@ -310,7 +278,7 @@ public class BankDaoImplementation implements BankDAO{
 	@Override
 	public Accounts accountAfterTransaction(int accountNum) {
 		Accounts acc= new Accounts();
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String sql = "SELECT * FROM ACCOUNTS WHERE ACCOUNT_ID = ?";
 			PreparedStatement stmt = con.prepareCall(sql);
 			stmt.setInt(1, accountNum);
@@ -335,7 +303,7 @@ public class BankDaoImplementation implements BankDAO{
 	public boolean ItsNotYourAccount(int accountNum, int Userid) {
 		ResultSet rs = null;
 		boolean yourAccount = false;
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "SELECT * FROM ACCOUNTS WHERE ACCOUNT_ID=? AND USER_ID=?";
 			
 		
@@ -366,7 +334,7 @@ public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public void DeleteYoAccount(int Account_id) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "CALL SP_DELETE_YO_ACCOUNT(?)";
 			
 		
@@ -389,7 +357,7 @@ public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public void SuperDeleteAllAccounts() {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "CALL SP_DELETE_ALL_ACCOUNTS";
 			
 		
@@ -412,7 +380,7 @@ public class BankDaoImplementation implements BankDAO{
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		int x=0;
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "SELECT BALANCE FROM ACCOUNTS WHERE ACCOUNT_ID = ?";
 			stmt = con.prepareStatement(query);
 			stmt.setInt(1, accountid);
@@ -439,7 +407,7 @@ public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public void SuperUpdateFirstName(String firstname, int userid) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "UPDATE LEDGER SET FIRSTNAME = ? WHERE USER_ID= ? ";
 							
 			PreparedStatement stmt = con.prepareStatement(query);
@@ -460,7 +428,7 @@ public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public void SuperUpdateLastName(String lastname, int userid) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "UPDATE LEDGER SET LASTNAME = ? WHERE USER_ID= ? ";
 							
 			PreparedStatement stmt = con.prepareStatement(query);
@@ -480,7 +448,7 @@ public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public void SuperUpdateUserName(String username, int userid) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "UPDATE LEDGER SET USERNAME = ? WHERE USER_ID= ? ";
 							
 			PreparedStatement stmt = con.prepareStatement(query);
@@ -500,7 +468,7 @@ public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public void SuperUpdatePassword(String password, int userid) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "UPDATE LEDGER SET PASS = ? WHERE USER_ID= ? ";
 							
 			PreparedStatement stmt = con.prepareStatement(query);
@@ -520,7 +488,7 @@ public class BankDaoImplementation implements BankDAO{
 
 	@Override
 	public void SuperDeleteAMember(int user_id) {
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
 			String query = "CALL SP_DELETE_A_USER(?)";
 			
 		
@@ -544,9 +512,9 @@ public class BankDaoImplementation implements BankDAO{
 	public Boolean MemberExists(int userid) {
 		ResultSet rs = null;
 		boolean login = false;
-		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
-			String query = "Select * FROM LEDGER WHERE USER_ID = ?";
-			
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//main//java//com//resources//Connection")){
+			String query = "Select * FROM LEDGER WHERE USER_ID = ?";											//kathrynbirhanproject//src//main//java//com//resources//Connection
+																												
 		
 			PreparedStatement stmt = con.prepareStatement(query);
 			stmt.setInt(1, userid);

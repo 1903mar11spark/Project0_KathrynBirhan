@@ -8,7 +8,6 @@ import com.revature.beans.Ledger;
 public interface BankDAO {
 	public List<Ledger> getLedger();
 	public List<Accounts> getAccounts(int num);
-	public Ledger getLedgerByID(int id);
 	public void CreateNewUser(Ledger ledger);
 	public void deleteAccounts(int userid);
 	public void CreateNewCheckingAccount(int i);

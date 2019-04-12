@@ -25,7 +25,7 @@ public static void main(String[] args) {
 	System.out.println("Enter '1' into the console to register as new a Member ");
 	System.out.println("Enter '2' into the console to login \n");
 	System.out.println("Enter any other number to quit the KB Banking experience\n");
-	System.out.println("NOTE: PLEASE ONLY ENTER NUMERICAL VALUES");
+	System.out.println("NOTE: PLEASE ONLY ENTER NUMERICAL VALUES WHEN INSTRUCTED TO DO SO");
 	Scanner myObj = new Scanner(System.in);
 	int choose = myObj.nextInt();
 	
@@ -57,7 +57,7 @@ public static void main(String[] args) {
 		/*
 		 * this part is for the SuperUser
 		 */
-		if(userlog.equals("dylan") && passlog.equals("isCool")) { 
+		if(userlog.equals("shameless") && passlog.equals("allDylansAreCool")) { 
 			int supes;
 			
 			do{
@@ -228,6 +228,9 @@ public static void main(String[] args) {
 					System.out.println("The User has been deleted");
 					break;
 				case 5:
+					/*
+					 * Delete All Users (
+					 */
 					int delete;
 					System.out.println("ARE YOU SURE YOU WANT TO DO THIS?");
 					System.out.println("Enter '1' for yes");
@@ -297,6 +300,9 @@ public static void main(String[] args) {
 						List<Accounts> YourAccounts = bd.getAccounts(userid);
 						for(Accounts a: YourAccounts) {
 							System.out.println(YourAccounts);
+						}
+						if (YourAccounts.isEmpty()) {
+							System.out.println("You have no accounts! why not make one?\n\n");
 						}
 						break;
 					case 4:
@@ -387,22 +393,11 @@ public static void main(String[] args) {
 	
 	
 } catch (InputMismatchException e) {
-	System.out.println("Why didn't you listen to the note? now you gotta start all over");
+	System.out.println("PLEASE FOLLOW DIRECTIONS AND ONLY ENTER NUMERICAL RESPONSES WHEN PROMTPTED TO DO SO");
 }
 	
 	
-	//List<Ledger> ClientList = bd.getLedger();
-	
 
-
-	
-	
-	//System.out.println(ClientList);
-
-	//for(Ledger l : ClientList) {
-	//	System.out.println(l);
-	//}
-	
 	
 	
 }
