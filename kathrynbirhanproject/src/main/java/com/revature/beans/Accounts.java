@@ -5,31 +5,31 @@ public class Accounts {
 		super();
 		}
 	
-	public Accounts(int id, Ledger ledger, double balance, String AccountType) {
+	public Accounts(int accountid, String AccountType, double balance, int userid) {
 		super();
-		this.id=id;
-		this.ledger=ledger;
+		this.accountid=accountid;
+		this.userid=userid;
 		this.balance=balance;
 		this.AccountType=AccountType;
 	}
-	private int id;
-	private Ledger ledger;
+	private int accountid;
+	private int userid;
 	private double balance;
 	private String AccountType;
 	public int getId() {
-		return id;
+		return accountid;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setaccountId(int accountid) {
+		this.accountid = accountid;
 	}
 
-	public Ledger getLedger() {
-		return ledger;
+	public int getuserid() {
+		return userid;
 	}
 
-	public void setLedger(Ledger ledger) {
-		this.ledger = ledger;
+	public void setuserid(int userid) {
+		this.userid = userid;
 	}
 
 	public double getBalance() {
@@ -50,7 +50,7 @@ public class Accounts {
 
 	@Override
 	public String toString() {
-		return "Account [id=" + id + ", ledger=" + ledger + ", balance=" + balance + ", AccountType=" + AccountType
+		return "Account [accountid=" + accountid + ", userid=" + userid + ", balance=" + balance + ", AccountType=" + AccountType
 				+ "]";
 	}
 	

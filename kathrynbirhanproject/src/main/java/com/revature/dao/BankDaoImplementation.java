@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class BankDaoImplementation implements BankDAO{
 							+" PASS,"
 							+" FIRSTNAME,"
 							+" LASTNAME ) VALUES ("
-							+"NULL,?, ?,?,?)";
+							+"Null,?, ?,?,?)";
 			PreparedStatement stmt = con.prepareStatement(query);
 			stmt.setString(1, ledger.getUsername());
 			stmt.setString(2, ledger.getPass());
@@ -85,6 +86,8 @@ public class BankDaoImplementation implements BankDAO{
 			stmt.executeUpdate();
 			stmt.close();
 
+			}catch (SQLIntegrityConstraintViolationException reason ) { 
+				System.out.println("[ERROR] - Username already taken!");
 			}
 		 catch (SQLException | IOException e) {
 			e.printStackTrace();
@@ -92,16 +95,183 @@ public class BankDaoImplementation implements BankDAO{
 		
 	}
 
+	@Override
+	public void CreateNewSavingsAccount(int i) {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "INSERT INTO ACCOUNTS (ACCOUNT_ID, ACCOUNT_TYPE, BALANCE, USER_ID) VALUES (NULL, 'SAVINGS',0.00,?)";
+					
+			PreparedStatement stmt = con.prepareStatement(query);
+			stmt.setInt(1, i);
+			
+
+			
+			stmt.executeUpdate();
+			stmt.close();
+
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	@Override
+	public void CreateNewCheckingAccount(int i) {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "INSERT INTO ACCOUNTS (ACCOUNT_ID, ACCOUNT_TYPE, BALANCE, USER_ID) VALUES (1, 'CHECKING',0.00,?)";
+
+			PreparedStatement stmt = con.prepareStatement(query);
+			stmt.setInt(1, i);
+			
+			
+			
+			stmt.executeUpdate();
+			stmt.close();
+
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
 
 	@Override
-	public void updateLedger(Ledger ledger) {
+	public void MakeDeposit(int AccountNum, double deposit) {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "UPDATE ACCOUNTS SET BALANCE = BALANCE +" +deposit +"WHERE ACCOUNT_ID="+AccountNum;
+							
+			PreparedStatement stmt = con.prepareStatement(query);
+
+			
+			stmt.executeUpdate();
+			stmt.close();
+
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	@Override
+	public void MakeWithdrawal(int accountNum, double withdrawal) {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "UPDATE ACCOUNTS SET BALANCE = BALANCE -" +withdrawal +"WHERE ACCOUNT_ID="+accountNum;;
+							
+			PreparedStatement stmt = con.prepareStatement(query);
+			
+			
+			stmt.executeUpdate();
+			stmt.close();
+
+			} catch(SQLIntegrityConstraintViolationException reason ) {
+				
+				System.out.println("WARNING! YOU ATTEMPTED TO WITHDRAW MORE MONEY THAN WAS AVAILABLE IN YOUR ACCOUNT! \n \n");
+				System.out.println("Here at KB banking, we protect customers from overdraft fees by not allowing them \n \n");
+				System.out.print("Just to be clear: You did NOT make a");
+				
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+
+	@Override
+	public List<Accounts> getAccounts(int num) {
+		
+		List<Accounts> l1 = new ArrayList<>();
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String sql = "SELECT * FROM ACCOUNTS WHERE USER_ID=?";
+			PreparedStatement stmt = con.prepareCall(sql);
+			stmt.setInt(1, num);
+			ResultSet rs = stmt.executeQuery();
+			while(rs.next()) {
+				int userId = rs.getInt("USER_ID");
+				int accountsid = rs.getInt("ACCOUNT_ID");
+				String accounttype = rs.getString("ACCOUNT_TYPE");
+				double balance = rs.getDouble("BALANCE");
+				
+				l1.add(new Accounts(accountsid, accounttype, balance, userId));
+			}
+		}catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		return l1;
+		
 		
 		
 	}
 
 	@Override
-	public void deleteLedger(Ledger ledger) {
-		// TODO Auto-generated method stub
+	public boolean Login(String userlogin, String passlogin) {
+		ResultSet rs = null;
+		boolean login = false;
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "Select USER_ID FROM LEDGER WHERE USERNAME = ? AND PASS = ?";
+			
+		
+			PreparedStatement stmt = con.prepareStatement(query);
+			stmt.setString(1, userlogin);
+			stmt.setString(2, passlogin);
+			
+			
+			stmt.executeUpdate();
+			rs= stmt.executeQuery();
+			if (rs.next()==true) {
+				login=true;
+			}
+			
+
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return login;
+		
+	}
+	
+
+	@Override
+	public void deleteAccounts(int accountid) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		int x=0;
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "SELECT BALANCE FROM ACCOUNTS WHERE ACCOUNT_ID=?";
+			stmt = con.prepareStatement(query);
+			stmt.setInt(1, accountid);
+			
+			
+			rs=stmt.executeQuery();
+			
+			rs.next();
+			x =rs.getInt("BALANCE");
+			stmt.close();
+			rs.close();
+			
+			if (x==0) {
+				String str = "DELETE FROM ACCOUNTS WHERE ACCOUNT_ID=?";
+				stmt = con.prepareStatement(str);
+				stmt.setInt(1, accountid);
+				
+				
+				rs=stmt.executeQuery();
+				rs.close();
+				stmt.close();
+			} else {
+				System.out.println("You must withdraw all your money before deleting your account!");
+			}
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
 		
 	}
 	@Override
@@ -109,21 +279,77 @@ public class BankDaoImplementation implements BankDAO{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
-	public void MakeDeposit(Accounts account) {
+	public int retrieveUserAccounts(String userlogin, String passlogin) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		int x=0;
 		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
-			String query = "UPDATE ACCOUNT SET BALANCE = BALANCE + ? " +"WHERE ID="
-							+" USER_ID,"
-							+" PASS,"
-							+" FIRSTNAME,"
-							+" LASTNAME ) VALUES ("
-							+"NULL, ?,?,?)";
+			String query = "SELECT * FROM LEDGER WHERE USERNAME=? AND PASS=?";
+			stmt = con.prepareStatement(query);
+			stmt.setString(1, userlogin);
+			stmt.setString(2, passlogin);
+			
+			rs=stmt.executeQuery();
+			
+			rs.next();
+			x =rs.getInt("USER_ID");
+			stmt.close();
+			rs.close();
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		return x;
+	}
+
+	@Override
+	public Accounts accountAfterTransaction(int accountNum) {
+		Accounts acc= new Accounts();
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String sql = "SELECT * FROM ACCOUNTS WHERE ACCOUNT_ID = ?";
+			PreparedStatement stmt = con.prepareCall(sql);
+			stmt.setInt(1, accountNum);
+			ResultSet rs = stmt.executeQuery();
+			while(rs.next()) {
+				int userId = rs.getInt("USER_ID");
+				int accountsid = rs.getInt("ACCOUNT_ID");
+				String accounttype = rs.getString("ACCOUNT_TYPE");
+				double balance = rs.getDouble("BALANCE");
+				
+				 acc = new Accounts(userId, accounttype, balance,accountsid);
+				return acc;
+			}
+		}catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		return acc;
+	}
+
+	@Override
+	public boolean ItsNotYourAccount(int accountNum, int Userid) {
+		ResultSet rs = null;
+		boolean yourAccount = false;
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "SELECT * FROM ACCOUNTS WHERE ACCOUNT_ID=? AND USER_ID=?";
+			
+		
 			PreparedStatement stmt = con.prepareStatement(query);
-			stmt.setDouble(1, account.getBalance());
+			stmt.setInt(1, accountNum);
+			stmt.setInt(2, Userid);
 			
 			
 			stmt.executeUpdate();
-			stmt.close();
+			rs= stmt.executeQuery();
+			if (rs.next()==true) {
+				yourAccount=true;
+			}
+			
 
 			}
 		 catch (SQLException | IOException e) {
@@ -131,22 +357,48 @@ public class BankDaoImplementation implements BankDAO{
 		}
 		
 		
+		return yourAccount;
+
+
+
+	
 	}
+
 	@Override
-	public void MakeWithdrawal(Accounts account) {
+	public void DeleteYoAccount(int Account_id) {
 		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
-			String query = "UPDATE ACCOUNT SET BALANCE = BALANCE - ? " +"WHERE ID="
-							+" USER_ID,"
-							+" PASS,"
-							+" FIRSTNAME,"
-							+" LASTNAME ) VALUES ("
-							+"NULL, ?,?,?)";
-			PreparedStatement stmt = con.prepareStatement(query);
-			stmt.setDouble(1, account.getBalance());
+			String query = "CALL SP_DELETE_YO_ACCOUNT(?)";
+			
+		
+			CallableStatement cs = con.prepareCall(query);
+			cs.setInt(1, Account_id);
+			cs.execute();
 			
 			
-			stmt.executeUpdate();
-			stmt.close();
+			
+			
+
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+
+	}
+
+	@Override
+	public void SuperDeleteAllAccounts() {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "CALL SP_DELETE_ALL_ACCOUNTS";
+			
+		
+			CallableStatement cs = con.prepareCall(query);
+			cs.execute();
+			
+			
+			
+			
 
 			}
 		 catch (SQLException | IOException e) {
@@ -154,24 +406,72 @@ public class BankDaoImplementation implements BankDAO{
 		}
 		
 	}
+
 	@Override
-	public void CreateNewAccount(Accounts account) {
+	public int retrieveAccountBalance(int accountid) {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		int x=0;
 		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
-			String query = "INSERT INTO ACCOUNT ("
-							+" ACCOUNT_ID,"
-							+" ACCOUNT_TYPE,"
-							+" ACCOUNT_BALANCE,"
-							+" USER_ID ) VALUES ("
-							+"NULL, ?,?,NULL)";
-			PreparedStatement stmt = con.prepareStatement(query);
-			stmt.setString(1, account.getAccountType());
-			stmt.setDouble(2, account.getBalance());
+			String query = "SELECT BALANCE FROM ACCOUNTS WHERE ACCOUNT_ID = ?";
+			stmt = con.prepareStatement(query);
+			stmt.setInt(1, accountid);
 			
+			
+			rs=stmt.executeQuery();
+			
+			rs.next();
+			x =rs.getInt("Balance");
+			stmt.close();
+			rs.close();
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		return x;
+		
+	}
+
+
+
+	@Override
+	public void SuperUpdateFirstName(String firstname, int userid) {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "UPDATE LEDGER SET FIRSTNAME = ? WHERE USER_ID= ? ";
+							
+			PreparedStatement stmt = con.prepareStatement(query);
+			
+			stmt.setString(1, firstname);
+			stmt.setInt(2, userid);
 			
 			stmt.executeUpdate();
 			stmt.close();
 
-			}
+			} 
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+	@Override
+	public void SuperUpdateLastName(String lastname, int userid) {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "UPDATE LEDGER SET LASTNAME = ? WHERE USER_ID= ? ";
+							
+			PreparedStatement stmt = con.prepareStatement(query);
+			
+			stmt.setString(1, lastname);
+			stmt.setInt(2, userid);
+			
+			stmt.executeUpdate();
+			stmt.close();
+
+			} 
 		 catch (SQLException | IOException e) {
 			e.printStackTrace();
 		}
@@ -179,12 +479,94 @@ public class BankDaoImplementation implements BankDAO{
 	}
 
 	@Override
-	public List<Accounts> getAccounts() {
-		// TODO Auto-generated method stub
-		return null;
+	public void SuperUpdateUserName(String username, int userid) {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "UPDATE LEDGER SET USERNAME = ? WHERE USER_ID= ? ";
+							
+			PreparedStatement stmt = con.prepareStatement(query);
+			
+			stmt.setString(1, username);
+			stmt.setInt(2, userid);
+			
+			stmt.executeUpdate();
+			stmt.close();
+
+			} 
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
+	@Override
+	public void SuperUpdatePassword(String password, int userid) {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "UPDATE LEDGER SET PASS = ? WHERE USER_ID= ? ";
+							
+			PreparedStatement stmt = con.prepareStatement(query);
+			
+			stmt.setString(1, password);
+			stmt.setInt(2, userid);
+			
+			stmt.executeUpdate();
+			stmt.close();
 
+			} 
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void SuperDeleteAMember(int user_id) {
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "CALL SP_DELETE_A_USER(?)";
+			
+		
+			CallableStatement cs = con.prepareCall(query);
+			cs.setInt(1, user_id);
+			cs.execute();
+			
+			
+			
+			
+
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+				
+	}
+
+	@Override
+	public Boolean MemberExists(int userid) {
+		ResultSet rs = null;
+		boolean login = false;
+		try(Connection con = ConnectionUtil.getConnectionFromFile("//users//birhan//Documents//eclipse-workspace//kathrynbirhanproject//src//test//java//resources//Connection")){
+			String query = "Select * FROM LEDGER WHERE USER_ID = ?";
+			
+		
+			PreparedStatement stmt = con.prepareStatement(query);
+			stmt.setInt(1, userid);
+			
+			
+			stmt.executeUpdate();
+			rs= stmt.executeQuery();
+			if (rs.next()==true) {
+				login=true;
+			}
+			
+
+			}
+		 catch (SQLException | IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return login;
+	}
 
 	
 

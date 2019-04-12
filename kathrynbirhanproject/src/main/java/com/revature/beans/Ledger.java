@@ -5,6 +5,12 @@ public class Ledger {
 	public Ledger() {
 		super();
 	}
+	
+	public Ledger (String username, String pass) {
+		super();
+		this.pass=pass;
+		this.username=username;
+	}
 	public Ledger (String username, String pass, String firstname, String lastname) {
 		super();
 		this.pass=pass;
